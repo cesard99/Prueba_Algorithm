@@ -12,9 +12,9 @@ class PopulationBuilderForest(conf: Configuration,
                               validate: IUpdatePopulation,
                               lastPopulation: UpdatedPopulation) extends PopulationConstructor(conf, weights, dataset, validate, lastPopulation) {
 
-
+  
   private val builder = new TreeCollectionBuilder(conf, dataset)
-  var individuals: util.LinkedList[Individual]
+  var individuals: util.LinkedList[Individual]=_
 
   override def run(): Unit = {
     UP.clear()

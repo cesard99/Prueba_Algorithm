@@ -75,12 +75,12 @@ class Metrics(private var conf: Configuration, private var confusionMatrix: Conf
   def computeLift(confusionMatrix: ConfusionMatrix): Double = {
     val coverage = computeCoverage(confusionMatrix)
 
-    if (DoubleCompare.equals(coverage, 0)) {
+    if (DoubleCompare().equals(coverage, 0)) {
       1
     } else {
       val consequentSupport = computeConsequentSupport(confusionMatrix)
 
-      if (DoubleCompare.equals(consequentSupport, 0)) {
+      if (DoubleCompare().equals(consequentSupport, 0)) {
         1
       } else {
         getSupport(confusionMatrix) / (coverage * consequentSupport)

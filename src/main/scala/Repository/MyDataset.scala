@@ -5,98 +5,139 @@ import Utils.DoubleCompare
 import Utils.Util
 import dataset.InstanceSet
 
+import scala.collection.mutable.ArrayBuffer
+import scala.io.Source
+import scala.util.Using
+
 
 class MyDataset {
-  protected var instanceset: InstanceSet
-  private var attributes: Array[MyAttribute]=_
-  private var instances : Array[MyInstance]=_
+  private var attributes: ArrayBuffer[MyAttribute]=_
+  private var instances : ArrayBuffer[MyInstance]=_
   private var nClasses:Int=0
   private var nInputs:Int=0
   private var nAttr: Int=0
   private var classSupp:Array[Int]=_
-
-  def MyDataset(dataset:MyDataset): Unit = {
-    this(dataset,dataset.getNumInstances)
-    dataset.copyInstance(this)
-  }
-
-  def this(dataset:MyDataset,capacity:Int) = {
+  
+  def this(dataset:MyDataset) = {
     this()
-    instanceset=dataset.instanceset
     nClasses=dataset.nClasses
     nInputs=dataset.nInputs
     nAttr=dataset.nAttr
     attributes=dataset.attributes
-    classSupp=Array.ofDim(nClasses)
-    instances=Array.ofDim(capacity)
-
+    classSupp=new Array[Int](this.nClasses)
+    instances= new ArrayBuffer[MyInstance](dataset.getNumInstances)
+    dataset.copyInstance(this)
   }
-  def this(datasetFile :String,isTrain: Boolean) = {
+  def this(pathFile :String,delimiter:String) = {
     this()
-    readSet(datasetFile,isTrain)
-    readAttributes()
-    readInstances()
+    var file :ArrayBuffer[Array[String]]=readFile(pathFile,delimiter)
+    readAttributes(file)
+    readInstances(file)
   }
 
-  private def readSet(datasetFIle:String, isTrain : Boolean)={
-    if (isTrain)
-      Attributes.clearAll()
-    try {
-      instanceSet = new InstanceSet()
-      instanceSet.readSet(file, isTrain)
-    } catch {
-      case e: Exception =>
-        System.exit(e.hashCode())
-    }
-
+  private def readFile(pathFile:String,delimiter:String): ArrayBuffer[Array[String]]={
+    Using(Source.fromFile(pathFile)){
+      source => source.getLines().map(_.split(delimiter).filter(_.nonEmpty)).filter(_.nonEmpty).to(ArrayBuffer)
+    }.getOrElse(ArrayBuffer.empty)
   }
 
-  private def readAttributes(): Unit = {
-    nInputs = Attributes.getInputNumAttributes()
-    nAttr = nInputs + Attributes.getOutputNumAttributes()
+  private def readAttributes(file:ArrayBuffer[Array[String]]): Unit = {
+    var header : Array[String]= file.remove(0)
+    this.nAttr=header.length
+    this.nInputs=this.nAttr-1
+    this.attributes=new ArrayBuffer[MyAttribute](this.nAttr)
+    var possibleValues:ArrayBuffer[ArrayBuffer[String]]=this.readPossiblesValues(file)
 
-    attributes=Array.ofDim(nAttr)
-
-    for (i <- 0 until nInputs) {
-      val attr: Attributes = Attributes.getInputAttribute(i)
-      var newAttr: MyAttribute = null
-
-      if (attr.getType == Attribute.NOMINAL) {
-
-        newAttr = new MyAttribute(attr.getName, attr.getNominalValuesList.asScala.toList, i)
-        newAttr.setRange(0, newAttr.numValues - 1.0f)
-      } else {
-
-        newAttr = new MyAttribute(attr.getName, attr.getType, i)
-        newAttr.setRange(attr.getMinAttribute, attr.getMaxAttribute)
+    for(i<- 0 until this.nInputs){
+      var a : MyAttribute =null
+      if(!isDouble(possibleValues(i).apply(0))){
+        a= new MyAttribute(header(i),possibleValues(i),i)
+        a.setRange(0.0D,(a.numValues-1).toFloat)
+      }else{
+        a= new MyAttribute(header(i), if(isInteger(possibleValues(i).apply(0)))1 else 2,i)
+        a.setRange(java.lang.Double.parseDouble(possibleValues(i).apply(0)),java.lang.Double.parseDouble(possibleValues(i).apply(1)))
       }
-      attributes:+ newAttr
+      this.attributes.addOne(a)
     }
+    var a :MyAttribute= new MyAttribute(header(this.nInputs),possibleValues(this.nInputs),this.nInputs)
+    a.setRange(0.0D,a.numValues-1)
+    this.attributes.addOne(a)
+    this.nClasses=this.attributes(this.nInputs).numValues
+
   }
 
-  private def readInstances(): Unit = {
-    val numInstances = instanceSet.getNumInstances()
 
-    val instances = new Array[MyInstance](numInstances)
-    val classSupp = new Array[Int](nClasses)
-
-    var classValue: Int = 0
-    var values: Array[Double] =null
-
-    for (j <- 0 until numInstances) {
-      values = new Array[Double](getNumAttributes)
-
-      for (i <- 0 until nInputs)
-        values(i) = instanceSet.getInputNumericValue(j, i)
-
-      classValue = instanceSet.getOutputNumericValue(j, 0).toInt
-
+  private def readInstances(file:ArrayBuffer[Array[String]]): Unit = {
+    var numInstances : Int = file.size
+    this.instances= new ArrayBuffer[MyInstance](numInstances)
+    this.classSupp= new Array[Int](this.nClasses)
+    file.foreach { line =>
+      val values = new Array[Double](nAttr)
+      for (i <- 0 until nInputs) {
+        val v = line(i)
+        values(i) = if (v.isEmpty) Double.MaxValue else {
+          val attr = attributes(i)
+          if (attr.isNominal) attr.indexOf(v).toDouble else v.toDouble
+        }
+      }
+      val v = line(nInputs)
+      val classValue = if (v.isEmpty) Int.MaxValue else attributes(nInputs).indexOf(v)
       addInstance(new MyInstance(values, classValue))
     }
+
+  }
+
+  private def readPossiblesValues(file:ArrayBuffer[Array[String]]):ArrayBuffer[ArrayBuffer[String]]={
+    var possibleValues:ArrayBuffer[ArrayBuffer[String]]= new ArrayBuffer[ArrayBuffer[String]](this.nAttr)
+    for (i<-0 until this.nAttr)
+     possibleValues.addOne(new ArrayBuffer())
+    for (line <- file){
+      for (i<- 0 until this.nAttr){
+        var value =line(i)
+        if(value.nonEmpty){
+          var pv :ArrayBuffer[String]=possibleValues(i)
+          try{
+            var v1 :Double= java.lang.Double.parseDouble(value)
+            if(pv.isEmpty)
+              pv.addOne(value)
+            else{
+              var v2:Double=java.lang.Double.parseDouble(pv(0))
+              
+              if(pv.size==1){
+                if(v1 !=v2)
+                  pv.insert(if(v1>v2) pv.size else 0,value)
+              }else{
+                if(v2>v1) pv.insert(0,value)
+                else if (java.lang.Double.parseDouble(pv(1))<v1)
+                  pv.insert(1,value)
+                  
+              }
+            }
+          }catch
+            case _:NumberFormatException=> if(!pv.contains(value)) pv.addOne(value)
+        }
+      }
     }
+    possibleValues
+  }
+  
 
   private def copyInstance(dest: MyDataset)= {
     dest.instances.foreach(addInstance)
+  }
+
+  def isInteger(s: String): Boolean = try {
+    s.toInt
+    true
+  } catch {
+    case _: NumberFormatException => false
+  }
+
+  def isDouble(s: String): Boolean = try {
+    s.toDouble
+    true
+  } catch {
+    case _: NumberFormatException => false
   }
 
   def addInstance(inst : MyInstance)={
@@ -108,14 +149,13 @@ class MyDataset {
     attributes.apply(index)
   }
 
-  def  getAttributes: Array[MyAttribute]= this.attributes
+  def  getAttributes: ArrayBuffer[MyAttribute]= this.attributes
   def getClassIndex : Int =nInputs
 
   def getClassesSupp(pos: Int): Int = classSupp(pos)
   def getClasesSupp : Array[Int]=classSupp
-  def getInstaceSet : InstanceSet =instanceSet
   def getInstance(pos: Int ):MyInstance=instances(pos)
-  def getInstances:Array[MyInstance]=instances
+  def getInstances:ArrayBuffer[MyInstance]=instances
   def isMissing(i:Int,v: Int):Boolean=  getInstance(i).isMissing(v)
   def getNumClasses:Int=nClasses
   def getNumInstances:Int= instances.length

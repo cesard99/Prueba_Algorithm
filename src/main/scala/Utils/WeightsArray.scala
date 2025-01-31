@@ -10,7 +10,8 @@ class WeightsArray {
   private  var weights : Array[Array[Double]]=_
   private var weightsNeighbors :Array[Array[Int]]= _
 
-  def weightsArray(t:Int,h:Int): Unit = {
+  def this(t:Int,h:Int) = {
+    this()
     this.T=t
     this.H=h
 

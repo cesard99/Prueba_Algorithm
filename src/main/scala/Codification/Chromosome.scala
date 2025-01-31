@@ -8,7 +8,7 @@ import java.text.{DecimalFormat, NumberFormat}
 import java.util.Locale
 
 class Chromosome(  var dataset : MyDataset) extends  Cloneable {
-  var numGenes = dataset.getNumInputs
+  var numGenes: Int = dataset.getNumInputs
 
   private var lowerBound: Array[Double] = new Array[Double](numGenes)
   private var upperBound: Array[Double] = new Array[Double](numGenes)
@@ -34,7 +34,7 @@ class Chromosome(  var dataset : MyDataset) extends  Cloneable {
       if (involvedGenes(i) && (!isCovered(instance, i) || instance.isMissing(i)))
         return false
     }
-    return true
+     true
   }
 
   def isCovered(ins: MyInstance, index: Int): Boolean = {
@@ -49,7 +49,7 @@ class Chromosome(  var dataset : MyDataset) extends  Cloneable {
     if (isPositiveInterval) {
       return DoubleCompare().greaterEquals(value, lb)
     }
-    return DoubleCompare().less(value, lb) || DoubleCompare().greater(value, upperBound(index))
+     DoubleCompare().less(value, lb) || DoubleCompare().greater(value, upperBound(index))
 
   }
 
@@ -61,7 +61,7 @@ class Chromosome(  var dataset : MyDataset) extends  Cloneable {
         return false
       }
     }
-    return true
+     true
   }
 
   override def clone(): Chromosome = {
@@ -76,21 +76,21 @@ class Chromosome(  var dataset : MyDataset) extends  Cloneable {
 
   def getNumInvolvedGenes: Int = numInvolvedGenes
 
-  def setLowerBound(value: Double, index: Int) = {
+  def setLowerBound(value: Double, index: Int): Unit = {
     lowerBound(index) = value
   }
 
-  def setUpperBound(value: Double, index: Int) = {
+  def setUpperBound(value: Double, index: Int): Unit = {
     upperBound(index) = value
   }
 
-  def getLowerBound(index: Int): Unit = lowerBound(index)
+  def getLowerBound(index: Int): Double = lowerBound(index)
 
-  def getUpperBound(index: Int) = upperBound(index)
+  def getUpperBound(index: Int): Double = upperBound(index)
 
   def isPositiveInterval(index: Int): Boolean = positiveIntervals(index)
 
-  def setPositiveInterval(value: Boolean, index: Int) = positiveIntervals(index) = value
+  def setPositiveInterval(value: Boolean, index: Int): Unit = positiveIntervals(index) = value
 
   def isInvolved(index: Int): Boolean = involvedGenes(index)
 
@@ -101,15 +101,15 @@ class Chromosome(  var dataset : MyDataset) extends  Cloneable {
     involvedGenes(index) = value
   }
 
-  def cloneGene(chromosome: Chromosome, index: Int) = {
+  def cloneGene(chromosome: Chromosome, index: Int): Unit = {
     lowerBound(index) = chromosome.lowerBound(index)
     upperBound(index) = chromosome.upperBound(index)
     positiveIntervals(index) = chromosome.positiveIntervals(index)
     setInvolved(chromosome.involvedGenes(index), index)
   }
 
-  @Override
-  def toString():String={
+  
+  override def toString:String={
     val locale : Locale = new Locale("en","UK")
     var pattern : String = "###.####"
 

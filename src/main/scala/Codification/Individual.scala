@@ -78,7 +78,7 @@ class Individual(private var conf : Configuration, private var dataset: MyDatase
     chromosome.equals(individual.chromosome)
   }
 
-  def clone : Individual={
+  override def clone : Individual={
     var clone : Individual = null
     try {
       clone = super.clone().asInstanceOf[Individual]

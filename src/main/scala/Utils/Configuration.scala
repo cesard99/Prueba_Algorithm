@@ -11,8 +11,8 @@ class Configuration {
   private var rulesFile: String =_
   private var durationFile:String =_
   private var measureFileTra : String =_
-  private var covFileTra :String =_
-  private var evolveMetricsFile:String =_
+ // private var covFileTra :String =_
+ // private var evolveMetricsFile:String =_
   private var populationBuilderTy : String =_
   private var maxTrials: Int =0
   private var numObjetives : Int=0
@@ -26,8 +26,10 @@ class Configuration {
   private var redundancyThreshold : Double =0.0
   private var dominanceThreshold : Double =0.0
   private var minInstances: Double =0.0
+  private var csvDelimiter:String =_
 
-  def Configuration(p: ConfigurationParser): Unit = {
+  def this(p: ConfigurationParser)= {
+    this()
     name =p.algorithmName
 
     inputFileTra= p.getInputFile(1)
@@ -36,8 +38,8 @@ class Configuration {
     rulesFile= p.getOutputFile(0)
     durationFile=p.getOutputFile(1)
     measureFileTra=p.getOutputFile(2)
-    covFileTra=p.getOutputFile(3)
-    evolveMetricsFile=p.getOutputFile(4)
+   // covFileTra=p.getOutputFile(3)
+   // evolveMetricsFile=p.getOutputFile(4)
 
 
     Randomize.setSeed(p.getParameter(0).toLong)
@@ -54,7 +56,7 @@ class Configuration {
     redundancyThreshold=p.getParameter(11).toDouble
     dominanceThreshold=p.getParameter(12).toDouble
     minInstances=p.getParameter(13).toDouble
-
+    csvDelimiter=p.getParameter(14)
 
   }
 
@@ -64,8 +66,8 @@ class Configuration {
   def getRulesFile:String =rulesFile
   def getDurationFile:String =durationFile
   def getMeasureFileTra:String =measureFileTra
-  def getCovFileTra :String =covFileTra
-  def getEvolveMetricsFile:String =evolveMetricsFile
+  //def getCovFileTra :String =covFileTra
+  //def getEvolveMetricsFile:String =evolveMetricsFile
   def getPopulationBuilderType:String =populationBuilderTy
 
   def getMaxTrials: Int = maxTrials
@@ -80,5 +82,5 @@ class Configuration {
   def getRedundancyThreshold:Double=redundancyThreshold
   def getDominanceThreshold:Double= dominanceThreshold
   def getMinInstances : Double= minInstances
-  
+  def getCsvDelimiter:String=csvDelimiter
 }

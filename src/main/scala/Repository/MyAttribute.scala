@@ -4,9 +4,7 @@ import scala.collection.mutable.ArrayBuffer
 
 class MyAttribute(val name: String, val attributeType: Int, private var _index: Int) {
 
-
-
-  private var values: ArrayBuffer[String] = ArrayBuffer.empty[String]
+  private var values: ArrayBuffer[String] = ArrayBuffer()
   private var lowerBound: Double = 0.0
   private var upperBound: Double = 0.0
   private var amplitude: Double = 0.0

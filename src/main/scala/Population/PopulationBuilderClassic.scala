@@ -11,7 +11,7 @@ class PopulationBuilderClassic(conf: Configuration,
                                update: IUpdatePopulation,
                                UP: UpdatedPopulation) extends PopulationConstructor(conf, weights, dataset, update, UP){
 
-
+  
   override def run(): Unit = {
     UP.clear()
 
