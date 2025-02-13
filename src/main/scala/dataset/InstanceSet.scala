@@ -1,3 +1,0 @@
-package dataset
-
-class InstanceSet

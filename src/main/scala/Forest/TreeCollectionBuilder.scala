@@ -9,7 +9,7 @@ import Utils.Configuration
 import java.util
 import java.util.LinkedList
 import java.util.stream.IntStream
-
+import scala.util.Random
 
 class TreeCollectionBuilder(private val conf:Configuration, private val dataset: MyDataset ) {
   private val THREAD : Int = Runtime.getRuntime.availableProcessors()
@@ -25,7 +25,7 @@ class TreeCollectionBuilder(private val conf:Configuration, private val dataset:
         var trainBag: Array[Int] = Array(size)
 
         for (i<- 0 until size ){
-          trainBag(i)=Randomize.randInt(0,size)
+          trainBag(i)=Random.nextInt(size)
         }
         val constructor: TreeBuilder = new TreeBuilder(dataset, trainBag, minInstances)
         covert(constructor.build, new Chromosome(dataset))
@@ -85,10 +85,10 @@ class TreeCollectionBuilder(private val conf:Configuration, private val dataset:
 
   private def   buildUninvolvedGene(individual: Individual, index: Int):Unit={
     val chromosome: Chromosome= individual.getChromosome
-    chromosome.setPositiveInterval(Randomize.randBoolean(),index)
+    chromosome.setPositiveInterval(Random.nextBoolean(),index)
 
     val covered : Array[Int]= individual.getMetrics.getCovered
-    val instanceIndex = covered(Randomize.randInt(0,covered.length))
+    val instanceIndex = covered(Random.nextInt(covered.length))
     val value : Double= dataset.getInstance(instanceIndex).values(index)
     
     var lb : Double=0.0

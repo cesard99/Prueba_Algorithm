@@ -43,7 +43,7 @@ class ChooseInterval( dataset : MyDataset,instaceIndexes:Array[Int] , attributeI
         var positiveClassSupport:Array[Int]= null
         var negativeClassSupport:Array[Int]= null
 
-        if (Randomize.randBoolean()){
+        if (scala.util.Random.nextBoolean()){
           lb=0
           ub=i
           positiveClassSupport=leftClassSupp

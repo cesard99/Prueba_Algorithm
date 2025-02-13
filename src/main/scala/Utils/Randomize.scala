@@ -15,14 +15,6 @@ object Randomize {
     Utils.Randomize.rand()
   }
 
-  def randBoolean(): Boolean = {
-    rand() > 0.5
-  }
-
-  def randInt(lb: Int, ub: Int): Int = {
-    (lb + (ub - lb) * rand()).toInt
-  }
-
   def randIntOpen(lb: Int, ub: Int): Int = {
     ((lb + 1) + (ub - (lb + 1)) * rand()).toInt
   }

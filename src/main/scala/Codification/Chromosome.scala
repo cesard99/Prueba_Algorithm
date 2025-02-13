@@ -6,6 +6,7 @@ import Utils.Randomize
 
 import java.text.{DecimalFormat, NumberFormat}
 import java.util.Locale
+import scala.util.Random
 
 class Chromosome(  var dataset : MyDataset) extends  Cloneable {
   var numGenes: Int = dataset.getNumInputs
@@ -20,10 +21,10 @@ class Chromosome(  var dataset : MyDataset) extends  Cloneable {
     if (numInvolvedGenes == 0) {
       var numGenes: Int = dataset.getNumInputs
 
-      var i = Randomize.randInt(0, numGenes)
+      var i = Random.nextInt(numGenes)
       while (!involvedGenes(i)) {
         setInvolved(true, i)
-        i = Randomize.randInt(0, numGenes)
+        i = Random.nextInt(numGenes)
       }
     }
 

@@ -4,6 +4,7 @@ import Repository.{MyAttribute, MyDataset, MyInstance}
 import Utils.{Configuration, DoubleCompare, Randomize, Util, WeightsArray}
 
 import scala.collection.mutable.ArrayBuffer
+import scala.util.Random
 
 class PopulationBuilderClassic(conf: Configuration,
                                weights: WeightsArray,
@@ -24,7 +25,7 @@ class PopulationBuilderClassic(conf: Configuration,
         }
       }
 
-      val ind: Individual = buildIndividual(notCovered(Randomize.randInt(0, notCovered.size)))
+      val ind: Individual = buildIndividual(notCovered(scala.util.Random.nextInt(notCovered.size)))
           ind.computeObjetives()
 
 
@@ -55,7 +56,7 @@ class PopulationBuilderClassic(conf: Configuration,
       val a = dataset.getAttribute(rndAttr(i))
 
       chromosome.setInvolved(true, a.getIndex)
-      chromosome.setPositiveInterval(Randomize.randBoolean(), a.getIndex)
+      chromosome.setPositiveInterval(Random.nextBoolean(), a.getIndex)
 
       value = instance.value(a.getIndex)
 
@@ -98,7 +99,7 @@ class PopulationBuilderClassic(conf: Configuration,
       val a = dataset.getAttribute(rndAttr(i))
 
       chromosome.setInvolved(false, rndAttr(i))
-      chromosome.setPositiveInterval(Randomize.randBoolean(), rndAttr(i))
+      chromosome.setPositiveInterval(Random.nextBoolean(), rndAttr(i))
 
       value = Randomize.randDoubleClosed(a.getLowerBound, a.getUpperBound)
 
@@ -113,7 +114,7 @@ class PopulationBuilderClassic(conf: Configuration,
           ub = ub.toInt
         }
       } else {
-        ub = Randomize.randInt(0, a.numValues)
+        ub = Random.nextInt(a.numValues)
         lb = ub
       }
 

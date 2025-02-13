@@ -31,7 +31,7 @@ object Util {
   def randomPermutation(size : Int):Array[Int]={
     val index = Array.tabulate(size)(i => i)
     for (i <- 0 until size) {
-      val j = Randomize.randInt(0,size) //Genra un numero aleatorio entre el 0 y el size
+      val j = scala.util.Random.nextInt(size) //Genra un numero aleatorio entre el 0 y el size
       val temp = index(i)
       index(i) = index(j)
       index(j) = temp

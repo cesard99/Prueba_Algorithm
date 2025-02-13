@@ -3,7 +3,7 @@ package Repository
 import java.util.Comparator
 import Utils.DoubleCompare
 import Utils.Util
-import dataset.InstanceSet
+
 
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source

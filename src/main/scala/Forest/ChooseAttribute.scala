@@ -1,15 +1,14 @@
 package Forest
 
-import Utils.Randomize
 import Repository.MyDataset
-import Utils.DoubleCompare
+import scala.util.Random
 
 class ChooseAttribute( private val dataset: MyDataset,private val instanceIndexes: Array[Int], private val attributeUsed: Array[Boolean]) {
   val c: Int = 0
   var interval: Interval = _
 
   def run(): Unit = {
-    var i = Randomize.randInt(0, dataset.getNumInputs)
+    var i = Random.nextInt(dataset.getNumInputs)
     val j = i
 
     //Se usa un While-do Porque ya a partir de scala 3.0 se descontinuo el do-While
