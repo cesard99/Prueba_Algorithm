@@ -4,71 +4,43 @@ import  Utils.DoubleCompare
 
 class TreeBuilder(private val dataset: MyDataset, private val instanceIndexes: Array[Int], private val minInstances: Int) {
 
-  def build : Node ={
-    recursiveBuild(instanceIndexes, new Array[Boolean](dataset.getNumInputs),-1,-1)
-  }
+  def build : Node = recursiveBuild(instanceIndexes, new Array[Boolean](dataset.getNumInputs))
 
-  private def recursiveBuild(instances :Array[Int],attributes: Array[Boolean],parentClass : Int, parentWracc : Double ):Node ={
-    var chooseAttribute : ChooseAttribute = new ChooseAttribute(dataset,instances,attributes)
+
+  private def recursiveBuild(instances :Array[Int],attributesUsed: Array[Boolean]):Node ={
+    val chooseAttribute : ChooseAttribute = new ChooseAttribute(dataset,instances,attributesUsed)
     chooseAttribute.run()
 
-    var interval : Interval =chooseAttribute.getInterval
-    if (interval == null){
-      new Node()
+    val interval : Interval =chooseAttribute.getInterval
+    if (interval == null) return new Node()
+    
+    val root: Node = new Node(interval)
+    val attrIndex:Int = interval.getAttribute.getIndex
+    attributesUsed(attrIndex)=true
+    
+    val subsets : Array[Array[Int]]= interval.getSubsets
+
+    for(i <- subsets.indices){
+      val subset:Array[Int]=subsets(i)
+      val subsetSize:Int=subset.length
+      
+      if(subsetSize<= minInstances || getMajorityClass(subset)== subsetSize)
+        root.addChild(i,new Node())
+      else
+       root.addChild(i,recursiveBuild(subset,attributesUsed))  
     }
-    var root: Node = new Node(interval)
-
-    attributes(interval.getAttributeIndex)= true
-
-    for(i <- 0 until interval.getNumSubset){
-      root.addChild(i,buildChild(interval.getSubset(i),attributes,parentClass,parentWracc))
-
-    }
-    attributes(interval.getAttributeIndex)=false
+    attributesUsed(attrIndex)=false
     root
 
   }
-
-  private def buildChild(instances :Array[Int],attributes:Array[Boolean],parentClass: Int , parentWracc : Double):Node={
-    if (instances.length > minInstances){
-      var majorityClass : Array[Int]=computeMajorityClass(instances)
-
-      if(majorityClass(1) != instances.length){
-        var wracc: Double= computeWracc(instances,majorityClass(0),majorityClass(1))
-
-        if(majorityClass(0) != parentClass || DoubleCompare().greaterEquals(wracc,parentWracc))
-          return recursiveBuild(instances,attributes,majorityClass(0),wracc)
-      }
-
+  def getMajorityClass(intances: Array[Int]):Int={
+    val classSupp :Array[Int]= dataset.getClassSupp(intances)
+    var max = classSupp(0)
+    for(i<- 1 until classSupp.length ){
+      if(classSupp(i)> max) max = classSupp(i)
     }
-    new Node()
+    max
   }
 
-  private def computeMajorityClass(instaces : Array[Int]):Array[Int]={
-    var classSupp : Array[Int]= dataset.getClassSupp(instaces)
-
-    var majorityClass: Int =0
-    var majorityClassSupport: Int = classSupp(0)
-
-    for (j<-1 until classSupp.length){
-      if(classSupp(j)>majorityClassSupport){
-        majorityClass=j
-        majorityClassSupport=classSupp(j)
-      }
-
-    }
-
-    Array(majorityClass,majorityClassSupport)
-  }
-
-  private def computeWracc(instances :Array[Int],majorityClass :Int , majorityClassSupport: Int):Double={
-
-    var fp :Int = instances.length- majorityClassSupport
-    var tn : Int = dataset.getClassesSupp(majorityClass)-majorityClassSupport
-    var fn : Int = dataset.getNumInstances - instances.length - tn
-
-    var total : Double = dataset.getNumInstances
-
-    (majorityClassSupport/total)-((majorityClassSupport+fp)/total)* ((majorityClassSupport + fn )/total)
-  }
+  
 }

@@ -8,28 +8,27 @@ class ChooseAttribute( private val dataset: MyDataset,private val instanceIndexe
   var interval: Interval = _
 
   def run(): Unit = {
-    var i = Random.nextInt(dataset.getNumInputs)
-    val j = i
+    var i = Random.nextInt( dataset.getNumInputs) // Randomiza el valor de i
+    val j = i // Guardamos el valor de i para comparar en la condición de salida
 
-    //Se usa un While-do Porque ya a partir de scala 3.0 se descontinuo el do-While
-    while ( {
+    // Aseguramos que el bucle se ejecute al menos una vez
+    var firstIteration = true
+
+    while (firstIteration || i != j) {
+      firstIteration = false
+
       if (!attributeUsed(i)) {
-        val chooseInterval = new ChooseInterval(dataset, instanceIndexes, i)
+        val chooseInterval = new ChooseInterval(dataset, instanceIndexes, dataset.getAttribute(i))
         chooseInterval.run()
 
-        if (chooseInterval.getInterval.getSubsets != null) {
-          interval = chooseInterval.getInterval
+        if (chooseInterval.getInterval.getInfoGain != -1) {
+          interval = chooseInterval.getInterval // Actualiza el intervalo si encontramos uno válido
+          return // Terminamos la ejecución si encontramos un intervalo válido
         }
       }
 
       i = if (i == dataset.getNumInputs - 1) 0 else i + 1
-
-      i != j && interval == null
-    }) {
-      ()
     }
-
-
   }
 
   def getInterval:Interval= interval

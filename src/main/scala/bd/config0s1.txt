@@ -1,8 +1,9 @@
 algorithm = DINOS
-inputData = "/Users/Carlos/Desktop/exp/D0111/datasets/bupa/bupa-10-1tra.dat" "/Users/Carlos/Desktop/exp/D0111/datasets/bupa/bupa-10-1tra.dat" "/Users/Carlos/Desktop/exp/datasets/bupa/bupa-10-1tst.dat" 
-outputData = "/Users/Carlos/Desktop/exp/EXP/resultTEST.tra" "/Users/Carlos/Desktop/exp/EXP/resultTT.tst" "/Users/Carlos/Desktop/exp/EXP/result0s0e0.txt"  
+inputData = "/home/cesar-escalona/Cesar/Proyectos/Prueba_Algorithm/src/main/scala/bd/bupa-10-1tra.dat" "/home/cesar-escalona/Cesar/Proyectos/Prueba_Algorithm/src/main/scala/bd/bupa-10-1tra.dat" "/home/cesar-escalona/Cesar/Proyectos/Prueba_Algorithm/src/main/scala/bd/bupa-10-1tst.dat"
+outputData = "/home/cesar-escalona/Cesar/Proyectos/Results/resultTEST.tra" "/home/cesar-escalona/Cesar/Proyectos/Results/resultTT.tst" "/home/cesar-escalona/Cesar/Proyectos/Results/result0s0e0.txt"
 
 seed = 1343278692
+Type Population = "Random"
 Number of Objetives = 3
 Number of Evaluations = 50000
 H control parameter = 13
@@ -11,5 +12,8 @@ Probability parent solutions are selected from the neighborhood = 0.9
 Max solutions replaced by each child solution = 2
 Probability of Mutation = 0.1
 Factor amplitude = 2.0
-Difference threshold = 5.0
 Overlap Level = 0.75
+Difference threshold = 5.0
+Dominance threshold =0.3
+min instance=2
+csv Delimiter=,

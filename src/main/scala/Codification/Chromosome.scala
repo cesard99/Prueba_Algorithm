@@ -1,8 +1,8 @@
 package Codification
 
+import Randomize.Randomize
 import Repository.{MyAttribute, MyDataset, MyInstance}
 import Utils.DoubleCompare
-import Utils.Randomize
 
 import java.text.{DecimalFormat, NumberFormat}
 import java.util.Locale

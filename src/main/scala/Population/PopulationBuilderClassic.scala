@@ -1,7 +1,8 @@
 package Population
 import Codification.{Chromosome, Individual}
+import Randomize.Randomize
 import Repository.{MyAttribute, MyDataset, MyInstance}
-import Utils.{Configuration, DoubleCompare, Randomize, Util, WeightsArray}
+import Utils.{Configuration, DoubleCompare, Util, WeightsArray}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random

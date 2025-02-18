@@ -1,6 +1,10 @@
 package Utils
 
-import Utils.{ConfigurationParser, Randomize}
+import Randomize.Randomize
+import Utils.ConfigurationParser
+
+import java.lang
+import java.lang.Long
 
 
 
@@ -42,20 +46,20 @@ class Configuration {
    // evolveMetricsFile=p.getOutputFile(4)
 
 
-    Randomize.setSeed(p.getParameter(0).toLong)
+    Randomize.setSeed(lang.Long.parseLong(p.getParameter(0)))
     populationBuilderTy=p.getParameter(1)
-    numObjetives=p.getParameter(2).toInt
-    maxTrials=p.getParameter(3).toInt
-    h=p.getParameter(4).toInt
-    t=p.getParameter(5).toInt
-    deltaProbability=p.getParameter(6).toDouble
-    numRepetitions=p.getParameter(7).toInt
-    mutationProbabilty=p.getParameter(8).toDouble
-    amplitudeFactor=p.getParameter(9).toDouble
-    percentUpdate=p.getParameter(10).toDouble
-    redundancyThreshold=p.getParameter(11).toDouble
-    dominanceThreshold=p.getParameter(12).toDouble
-    minInstances=p.getParameter(13).toDouble
+    numObjetives=Integer.parseInt(p.getParameter(2))
+    maxTrials=Integer.parseInt(p.getParameter(3))
+    h=Integer.parseInt(p.getParameter(4))
+    t=Integer.parseInt(p.getParameter(5))
+    deltaProbability=java.lang.Double.parseDouble(p.getParameter(6))
+    numRepetitions=Integer.parseInt(p.getParameter(7))
+    mutationProbabilty=java.lang.Double.parseDouble(p.getParameter(8))
+    amplitudeFactor=java.lang.Double.parseDouble(p.getParameter(9))
+    percentUpdate=java.lang.Double.parseDouble(p.getParameter(10))
+    redundancyThreshold=java.lang.Double.parseDouble(p.getParameter(11))
+    dominanceThreshold=java.lang.Double.parseDouble(p.getParameter(12))
+    minInstances=java.lang.Double.parseDouble(p.getParameter(13))
     csvDelimiter=p.getParameter(14)
 
   }
