@@ -3,6 +3,8 @@ import Utils.{Configuration, DoubleCompare, Util}
 
 import java.text.{DecimalFormat, NumberFormat}
 import java.util.Locale
+import scala.math._
+import scala.util.control.Breaks._
 
 class Metrics(private var conf: Configuration, private var confusionMatrix: ConfusionMatrix) extends  Cloneable{
   private var coverage: Double = 0.0
@@ -14,46 +16,41 @@ class Metrics(private var conf: Configuration, private var confusionMatrix: Conf
   private var netConf: Double = 0.0
   private var sensitivity: Double = 0.0
   private var support: Double = 0.0
-  var wracc: Double = 0.0
+  private var wracc: Double = 0.0
   private var yulesQ: Double = 0.0
   private var oddRatio: Double = 0.0
 
   private var objectives: Array[Double] = Array()
-  var weights: Array[Double] = Array()
+  private var weights: Array[Double] = Array()
   private var neighbors: Array[Int] = Array()
-  var covered: Array[Int] = Array()
+  private var covered: Array[Int] = Array()
 
   def this()=this(null,null)
 
-  private def computeCoverage(confusionMatrix: ConfusionMatrix): Double = {
+  def computeCoverage(confusionMatrix: ConfusionMatrix): Double = {
     confusionMatrix.antecedentCovered() / confusionMatrix.total().toDouble
   }
 
   def computeConfidence(confusionMatrix: ConfusionMatrix): Double = {
-    val coverage = computeCoverage(confusionMatrix)
+    val coverage: Double  = computeCoverage(confusionMatrix)
 
-    if (DoubleCompare().greater(coverage, 0)) {
-       getSupport(confusionMatrix) / coverage
-    } else {
-      0.0
-    }
+    if (DoubleCompare().greater(coverage, 0))
+      return getSupport(confusionMatrix) / coverage
+    0
   }
 
   def computeCertaintyFactor(confusionMatrix: ConfusionMatrix): Double = {
     val consequentSupport :Double = computeConsequentSupport(confusionMatrix)
     val confidence = computeConfidence(confusionMatrix)
 
-    val den: Double = if (confidence > consequentSupport) {
-      1 - consequentSupport
-    } else {
-      consequentSupport
-    }
+    val den: Double = if (confidence > consequentSupport) 1 - consequentSupport else consequentSupport
+
 
     (confidence - consequentSupport) / den
   }
 
   def computeConsequentSupport(matrix: ConfusionMatrix):Double={
-    confusionMatrix.antecedentCovered()/ confusionMatrix.total().toDouble
+    matrix.consequentCovered()/ matrix.total().toDouble
   }
 
   def computeConviction(confusionMatrix: ConfusionMatrix):Double={
@@ -65,27 +62,19 @@ class Metrics(private var conf: Configuration, private var confusionMatrix: Conf
     val coverage: Double = computeCoverage(confusionMatrix)
     val support: Double = getSupport(confusionMatrix)
 
-    if(DoubleCompare().equals(coverage,support)){
-       1
-    } else{
-      coverage * (1-consequentSupport)/(coverage-support)
-    }
+    if(DoubleCompare().equals(coverage,support)) 1 else coverage * (1-consequentSupport)/(coverage-support)
+
   }
 
   def computeLift(confusionMatrix: ConfusionMatrix): Double = {
     val coverage = computeCoverage(confusionMatrix)
 
-    if (DoubleCompare().equals(coverage, 0)) {
-      1
-    } else {
-      val consequentSupport = computeConsequentSupport(confusionMatrix)
+    if (DoubleCompare().equals(coverage, 0))
+      return  1
 
-      if (DoubleCompare().equals(consequentSupport, 0)) {
-        1
-      } else {
-        getSupport(confusionMatrix) / (coverage * consequentSupport)
-      }
-    }
+    val consequentSupport= computeConsequentSupport(confusionMatrix)
+    if(DoubleCompare().equals(consequentSupport,0)) 1 else getSupport(confusionMatrix)/(coverage * consequentSupport)
+
   }
 
   def computeNetConf(confusionMatrix: ConfusionMatrix): Double = {
@@ -95,10 +84,7 @@ class Metrics(private var conf: Configuration, private var confusionMatrix: Conf
        return 0
     }
     val den : Double= coverage*(1-coverage)
-    if(DoubleCompare().equals(den,0)){
-      0
-    }else
-      (getSupport(confusionMatrix)-coverage*computeConsequentSupport(confusionMatrix)) /den
+    if(DoubleCompare().equals(den,0)) 0 else (getSupport(confusionMatrix)-coverage*computeConsequentSupport(confusionMatrix)) /den
   }
 
   def getSupport(matrix: ConfusionMatrix):Double={
@@ -124,23 +110,17 @@ class Metrics(private var conf: Configuration, private var confusionMatrix: Conf
     val left : Double = support*(1-consequentSupport-coverage+support)
     val rigth : Double = (coverage-support)*(consequentSupport-support)
     val den : Double= left+rigth
-    if(DoubleCompare().equals(den,0))
-      0
-    else
-      (left-rigth)/den
+    if(DoubleCompare().equals(den,0)) 0 else (left-rigth)/den
 
   }
 
-  def computeWracc(cm: ConfusionMatrix):Double={
-    getSupport(cm)-computeCoverage(cm)*computeConsequentSupport(cm)
-
-  }
+  def computeWracc(cm: ConfusionMatrix):Double= getSupport(cm)-computeCoverage(cm)*computeConsequentSupport(cm)
 
   def computeOddRatio(cm: ConfusionMatrix): Double = {
-    val fn = cm.getFn + 0.5
-    val fp = cm.getFp + 0.5
-    val tn = cm.getTn + 0.5
-    val tp = cm.getTp + 0.5
+    val fn :Double= cm.getFn + 0.5f
+    val fp :Double= cm.getFp + 0.5f
+    val tn :Double= cm.getTn + 0.5f
+    val tp :Double= cm.getTp + 0.5f
 
     (tn * tp) / (fn * fp)
   }
@@ -157,8 +137,7 @@ class Metrics(private var conf: Configuration, private var confusionMatrix: Conf
       clone.neighbors = this.neighbors.clone()
       clone.covered = this.covered.clone()
     } catch {
-      case e: CloneNotSupportedException =>
-      // it's supported
+      case e: CloneNotSupportedException => // it's supported
     }
 
     clone
@@ -182,12 +161,12 @@ class Metrics(private var conf: Configuration, private var confusionMatrix: Conf
 
     if (conf.getNumObjetives > 0) objectives(0) = wracc
     if (conf.getNumObjetives > 1) objectives(1) = confidence * sensitivity
-    if (conf.getNumObjetives > 2) objectives(2) = 1.0 / numAnts
+    if (conf.getNumObjetives > 2) objectives(2) = 1.0f / numAnts
   }
 
   def redundant(m: Metrics): Boolean = {
     val intersection : Int= intersectiom(m)
-    val overlap : Double= Math.max(intersection/ confusionMatrix.antecedentCovered().toDouble, intersection/ m.confusionMatrix.antecedentCovered().toDouble)
+    val overlap : Double= math.max(intersection/ confusionMatrix.antecedentCovered().toDouble, intersection/ m.confusionMatrix.antecedentCovered().toDouble)
 
     if(DoubleCompare().greaterEquals(overlap,conf.getRedundancyThreshold)){
       val b1 : Array[Double]=computeRedundantBands(confusionMatrix)
@@ -201,36 +180,37 @@ class Metrics(private var conf: Configuration, private var confusionMatrix: Conf
     false
   }
 
-  def dominance (m : Metrics):Int={
-    val intersection : Int = intersectiom(m)
-    val covc1 : Double= confusionMatrix.getTp + confusionMatrix.getFp
-    val covc2 : Double=m.confusionMatrix.getTp + m.confusionMatrix.getFp
-    val overlap : Double= Math.max(intersection/covc1,intersection/covc2)
+  def dominance (m : Metrics):Int= {
+    val intersection: Int = intersectiom(m)
+    val covc1: Double = confusionMatrix.getTp + confusionMatrix.getFp
+    val covc2: Double = m.confusionMatrix.getTp + m.confusionMatrix.getFp
+    val overlap: Double = math.max(intersection / covc1, intersection / covc2)
 
-    if (DoubleCompare().greaterEquals(overlap,conf.getDominanceThreshold)){
-      val best:Int =0
-      for (i<- 0 until conf.getNumObjetives){
-        if(DoubleCompare().greater(objectives(i),m.objectives(i))){
-          return best + 1
-        } else 
-          if(DoubleCompare().less(objectives(i),m.objectives(i)))
-            return best - 1
+    if (DoubleCompare().greaterEquals(overlap, conf.getDominanceThreshold)) {
+      var best: Int = 0
+      for (i <- 0 until conf.getNumObjetives) {
+        if (DoubleCompare().greater(objectives(i), m.objectives(i)))
+          best += 1
+
+        if (DoubleCompare().less(objectives(i), m.objectives(i)))
+          best -= 1
+
       }
-      best.compareTo(0)
+      return best.compareTo(0)
     }
     0
   }
 
   private def computeRedundantBands(cm: ConfusionMatrix): Array[Double] = {
-    val fn = cm.getFn + 0.5
-    val fp = cm.getFp + 0.5
-    val tp = cm.getTp + 0.5
-    val tn = cm.getTn + 0.5
+    val fn: Double = cm.getFn + 0.5f
+    val fp: Double = cm.getFp + 0.5f
+    val tp: Double = cm.getTp + 0.5f
+    val tn: Double = cm.getTn + 0.5f
 
-    val odd = (tp * tn) / (fn * fp)
-    val w = 1.96 * Math.sqrt(1 / tp + 1 / tn + 1 / fp + 1 / fn)
-    val lb = odd * Math.exp(-w)
-    val ub = odd * Math.exp(w)
+    val odd: Double = (tp * tn) / (fn * fp)
+    val w: Double = 1.96f * math.sqrt(1 / tp + 1 / tn + 1 / fp + 1 / fn)
+    val lb = odd * math.exp(-w)
+    val ub = odd * math.exp(w)
 
     Array(lb, ub)
   }
@@ -308,21 +288,22 @@ class Metrics(private var conf: Configuration, private var confusionMatrix: Conf
     val df = NumberFormat.getNumberInstance(locale).asInstanceOf[DecimalFormat]
     df.applyPattern(pattern)
 
-    s"${df.format(objectives(0))}," +
-      s"${df.format(objectives(1))}," +
-      s"${df.format(objectives(2))}," +
-      s"${df.format(coverage)}," +
-      s"${df.format(certaintyFactor)}," +
-      s"${df.format(confidence)}," +
-      s"${df.format(consequentSupport)}," +
-      s"${df.format(conviction)}," +
-      s"${df.format(lift)}," +
-      s"${df.format(netConf)}," +
-      s"${df.format(sensitivity)}," +
-      s"${df.format(support)}," +
-      s"${df.format(yulesQ)}," +
-      s"${df.format(wracc)}," +
+    s"${df.format(objectives(0))}, " +
+      s"${df.format(objectives(1))}, " +
+      s"${df.format(objectives(2))}, " +
+      s"${df.format(coverage)}, " +
+      s"${df.format(certaintyFactor)}, " +
+      s"${df.format(confidence)}, " +
+      s"${df.format(consequentSupport)}, " +
+      s"${df.format(conviction)}, " +
+      s"${df.format(lift)}, " +
+      s"${df.format(netConf)}, " +
+      s"${df.format(sensitivity)}, " +
+      s"${df.format(support)}, " +
+      s"${df.format(yulesQ)}, " +
+      s"${df.format(wracc)}, " +
       s"${df.format(oddRatio)}\n"
   }
+  
 }
 

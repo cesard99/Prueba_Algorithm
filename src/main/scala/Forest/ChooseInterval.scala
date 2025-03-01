@@ -1,8 +1,8 @@
 package Forest
 
-import Randomize.Randomize
-import Repository.{MyDataset,MyAttribute,MyInstance}
+import Repository.{MyAttribute, MyDataset, MyInstance}
 import Utils.DoubleCompare
+
 import java.util.Random
 
 

@@ -27,7 +27,15 @@ class MyInstance(val value: Array[Double], val classValue: Int) {
 
   // Devuelve una representación en cadena del objeto
   override def toString: String = {
-    value.mkString("[", ", ", "]")
+    val result:StringBuilder = new StringBuilder("[")
+    for(i<- value)
+      result.append(i).append(", ")
+    
+    result.deleteCharAt(value.length -1)
+    result.deleteCharAt(value.length -1)
+    
+    result.append("]")
+    result.toString()
   }
 }
 // Objeto compañero para constantes

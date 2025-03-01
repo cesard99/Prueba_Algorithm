@@ -1,6 +1,5 @@
 package Forest
 import Repository.MyDataset
-import  Utils.DoubleCompare
 
 class TreeBuilder(private val dataset: MyDataset, private val instanceIndexes: Array[Int], private val minInstances: Int) {
 
@@ -12,7 +11,7 @@ class TreeBuilder(private val dataset: MyDataset, private val instanceIndexes: A
     chooseAttribute.run()
 
     val interval : Interval =chooseAttribute.getInterval
-    if (interval == null) return new Node()
+    if (interval == null) return new Node() //Si no hay intervalo en el que se pueda dividir el nodo  se devuelve un nodo hoja 
     
     val root: Node = new Node(interval)
     val attrIndex:Int = interval.getAttribute.getIndex
@@ -33,7 +32,7 @@ class TreeBuilder(private val dataset: MyDataset, private val instanceIndexes: A
     root
 
   }
-  def getMajorityClass(intances: Array[Int]):Int={
+  private def getMajorityClass(intances: Array[Int]):Int={
     val classSupp :Array[Int]= dataset.getClassSupp(intances)
     var max = classSupp(0)
     for(i<- 1 until classSupp.length ){

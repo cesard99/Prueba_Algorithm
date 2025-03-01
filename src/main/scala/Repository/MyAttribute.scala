@@ -2,7 +2,7 @@ package Repository
 
 import scala.collection.mutable.ArrayBuffer
 
-class MyAttribute(val name: String, val attributeType: Int, private var _index: Int) {
+class MyAttribute(private val name: String, private val Type: Int, private var index: Int) {
 
   private var values: ArrayBuffer[String] = ArrayBuffer()
   private var lowerBound: Double = 0.0
@@ -27,23 +27,26 @@ class MyAttribute(val name: String, val attributeType: Int, private var _index: 
     this.upperBound = upperBound
     this.amplitude = upperBound - lowerBound
   }
+  
+  
 
   def getLowerBound: Double = lowerBound
   def getUpperBound: Double = upperBound
   def getAmplitude: Double = amplitude
 
-  def getType: Int = attributeType
-  def getIndex: Int = _index
+  def getname() :String = name
+  def getType: Int = Type
+  def getIndex: Int = index
   def setIndex(index: Int): Unit = {
-    _index = index
+    this.index = index
   }
 
   // Métodos estáticos
-  def isNominal: Boolean = attributeType == MyAttribute.NOMINAL
+  def isNominal: Boolean = Type == MyAttribute.NOMINAL
 
-  def isReal: Boolean = attributeType == MyAttribute.REAL
+  def isReal: Boolean = Type == MyAttribute.REAL
 
-  def isInteger: Boolean = attributeType == MyAttribute.INTEGER
+  def isInteger: Boolean = Type == MyAttribute.INTEGER
 }
 
 object MyAttribute {

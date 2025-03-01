@@ -1,4 +1,5 @@
 package Utils
+import scala.util.Random
 
 object Util {
   def intersection(array1: Array[Int], array2: Array[Int]): Int = {
@@ -9,10 +10,12 @@ object Util {
 
     val size1 = array1.length
     val size2 = array2.length
+    var v1 :Int=0
+    var v2 :Int=0
 
     while (i < size1 && j < size2) {
-      val v1 = array1(i)
-      val v2 = array2(j)
+      v1=array1(i)
+      v2=array2(i)
 
       if (v1 == v2) {
         c += 1
@@ -26,22 +29,26 @@ object Util {
       }
     }
     c
-
   }
   def randomPermutation(size : Int):Array[Int]={
-    val index = Array.tabulate(size)(i => i)
-    for (i <- 0 until size) {
-      val j = scala.util.Random.nextInt(size) //Genra un numero aleatorio entre el 0 y el size
-      val temp = index(i)
-      index(i) = index(j)
-      index(j) = temp
+    val index = new Array[Int](size)
+    for(i <- 0 until size)
+      index(i)=i
+    var temp: Int= 0
+    var j:Int=0
+
+    for(i<-0 until size){
+      j=Random.nextInt(size)
+
+      temp =index(i)
+      index(i)= index(j)
+      index(j)=temp
     }
     index
   }
 
   def log2(num: Double): Double = {
-    if (num > -1e-6 && num < 1e-6) 0.0
-    else num * (math.log(num) / math.log(2))
+    if (num > -1e-6 && num < 1e-6) 0 else num * (math.log(num) / math.log(2))
   }
   
   def swap(array: Array[Int], i: Int,j: Int):Unit={

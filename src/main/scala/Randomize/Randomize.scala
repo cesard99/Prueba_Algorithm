@@ -1,17 +1,15 @@
 package Randomize
 
-import scala.annotation.tailrec
-
 object Randomize {
-  private val generator:MTwister=null
+  private var generator:MTwister=_
 
   def setSeed(seed: Long): Unit = {
-   var generator: MTwister = new MTwister
-   generator.initGenerateRandom(seed)
+    generator = new MTwister
+    generator.initGenerateRandom(seed)
   }
 
   private def rand(): Double = this.synchronized {
-    generator.generateRandomRes53
+     return generator.generateRandomRes53
   }
 
   def randIntOpen(lb: Int, ub: Int): Int = {

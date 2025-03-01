@@ -1,6 +1,7 @@
 package Codification
 
-import Randomize.Randomize
+import scala.util.control.Breaks._
+
 import Repository.{MyAttribute, MyDataset, MyInstance}
 import Utils.DoubleCompare
 
@@ -8,41 +9,41 @@ import java.text.{DecimalFormat, NumberFormat}
 import java.util.Locale
 import scala.util.Random
 
-class Chromosome(  var dataset : MyDataset) extends  Cloneable {
+class Chromosome( private var dataset : MyDataset) extends  Cloneable {
   var numGenes: Int = dataset.getNumInputs
 
   private var lowerBound: Array[Double] = new Array[Double](numGenes)
   private var upperBound: Array[Double] = new Array[Double](numGenes)
   private var positiveIntervals: Array[Boolean] = new Array[Boolean](numGenes)
-  private var involvedGenes: Array[Boolean] = new Array[Boolean](numGenes)
-  private var numInvolvedGenes: Int = _
+  private var usedGenes: Array[Boolean] = new Array[Boolean](numGenes)
+  private var numUsedGenes: Int = 0
 
   def forceConsistency(): Unit = {
-    if (numInvolvedGenes == 0) {
-      var numGenes: Int = dataset.getNumInputs
-
-      var i = Random.nextInt(numGenes)
-      while (!involvedGenes(i)) {
-        setInvolved(true, i)
+    if(numUsedGenes == 0){
+      var i= Random.nextInt(numGenes)
+      while (!usedGenes(i)){
+        setUsedGene(true,i)
         i = Random.nextInt(numGenes)
       }
-    }
 
+    }
   }
 
   def isCovered(instance: MyInstance): Boolean = {
+    var flag = true
     for (i <- 0 until dataset.getNumInputs) {
-      if (involvedGenes(i) && (!isCovered(instance, i) || instance.isMissing(i)))
-        return false
+      if (usedGenes(i) && (!isCovered(instance, i) || instance.isMissing(i)))
+        flag=false
+        break()
     }
-     true
+     flag
   }
 
   def isCovered(ins: MyInstance, index: Int): Boolean = {
 
-    var isPositiveInterval: Boolean = positiveIntervals(index)
-    var value: Double = ins.value(index)
-    var lb = lowerBound(index)
+    val isPositiveInterval: Boolean = positiveIntervals(index)
+    val value: Double = ins.value(index)
+    val lb = lowerBound(index)
 
     if (dataset.getAttribute(index).isNominal) {
       return isPositiveInterval == DoubleCompare().equals(value, lb)
@@ -55,14 +56,16 @@ class Chromosome(  var dataset : MyDataset) extends  Cloneable {
   }
 
   def equals(chr: Chromosome): Boolean = {
-    var numGenes: Int = dataset.getNumInputs
+    val numGenes: Int = dataset.getNumInputs
+    var flag :Boolean= true
 
     for (i <- 0 until numGenes) {
-      if (involvedGenes(i) != chr.involvedGenes(i) || positiveIntervals(i) != chr.positiveIntervals(i) || !DoubleCompare().equals(lowerBound(i), chr.lowerBound(i)) || !DoubleCompare().equals(upperBound(i), chr.upperBound(i))) {
-        return false
+      if (usedGenes(i) != chr.usedGenes(i) || positiveIntervals(i) != chr.positiveIntervals(i) || !DoubleCompare().equals(lowerBound(i), chr.lowerBound(i)) || !DoubleCompare().equals(upperBound(i), chr.upperBound(i))) {
+        flag=false
+        break()
       }
     }
-     true
+     flag
   }
 
   override def clone(): Chromosome = {
@@ -71,11 +74,11 @@ class Chromosome(  var dataset : MyDataset) extends  Cloneable {
     cloned.lowerBound = this.lowerBound.clone()
     cloned.upperBound = this.upperBound.clone()
     cloned.positiveIntervals = this.positiveIntervals.clone()
-    cloned.involvedGenes = this.involvedGenes.clone()
+    cloned.usedGenes = this.usedGenes.clone()
     cloned
   }
 
-  def getNumInvolvedGenes: Int = numInvolvedGenes
+  def getNumUsedGenes: Int = numUsedGenes
 
   def setLowerBound(value: Double, index: Int): Unit = {
     lowerBound(index) = value
@@ -93,40 +96,40 @@ class Chromosome(  var dataset : MyDataset) extends  Cloneable {
 
   def setPositiveInterval(value: Boolean, index: Int): Unit = positiveIntervals(index) = value
 
-  def isInvolved(index: Int): Boolean = involvedGenes(index)
+  def isUsedGene(index: Int): Boolean = usedGenes(index)
 
-  def setInvolved(value: Boolean, index: Int): Unit = {
-    if (involvedGenes(index) != value) {
-      numInvolvedGenes += (if (value) 1 else -1)
+  def setUsedGene(value: Boolean, index: Int): Unit = {
+    if (usedGenes(index) != value) {
+      numUsedGenes += (if (value) 1 else -1)
     }
-    involvedGenes(index) = value
+    usedGenes(index) = value
   }
 
   def cloneGene(chromosome: Chromosome, index: Int): Unit = {
     lowerBound(index) = chromosome.lowerBound(index)
     upperBound(index) = chromosome.upperBound(index)
     positiveIntervals(index) = chromosome.positiveIntervals(index)
-    setInvolved(chromosome.involvedGenes(index), index)
+    setUsedGene(chromosome.usedGenes(index), index)
   }
 
   
   override def toString:String={
     val locale : Locale = new Locale("en","UK")
-    var pattern : String = "###.####"
+    val pattern: String = "###.####"
 
     val df = NumberFormat.getNumberInstance(locale).asInstanceOf[DecimalFormat]
     df.applyPattern(pattern)
 
-    var contents: StringBuilder = new StringBuilder("\"")
-    var size = dataset.getNumInputs
+    val contents: StringBuilder = new StringBuilder("\"")
+    val size = dataset.getNumInputs
 
     for (i <- 0 until size){
-      if (involvedGenes(i)){
+      if (usedGenes(i)){
         if(contents.length != 1) {
           contents.append(" AND")
         }
-        var a : MyAttribute = dataset.getAttribute(i)
-        contents.append(a.name).append("")
+        val a: MyAttribute = dataset.getAttribute(i)
+        contents.append(a.getname()).append("")
 
         if(a.isNominal){
           contents.append(if (positiveIntervals(i)) "" else "NOT ").append(a.value(upperBound(i).toInt))
@@ -137,7 +140,7 @@ class Chromosome(  var dataset : MyDataset) extends  Cloneable {
       }
     }
 
-    contents.append("-->").append(dataset.getClassAttribute.name).toString()
+    contents.append("-->").append(dataset.getClassAttribute.getname()).toString()
   }
 
 

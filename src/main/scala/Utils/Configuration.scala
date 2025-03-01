@@ -1,7 +1,6 @@
 package Utils
 
 import Randomize.Randomize
-import Utils.ConfigurationParser
 
 import java.lang
 import java.lang.Long
@@ -10,13 +9,16 @@ import java.lang.Long
 
 class Configuration {
   private  var name : String =_
+
   private var inputFileTra: String =_
   private var inputFileTst: String =_
+
   private var rulesFile: String =_
   private var durationFile:String =_
   private var measureFileTra : String =_
  // private var covFileTra :String =_
  // private var evolveMetricsFile:String =_
+
   private var populationBuilderTy : String =_
   private var maxTrials: Int =0
   private var numObjetives : Int=0

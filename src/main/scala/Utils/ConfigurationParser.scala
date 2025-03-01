@@ -49,20 +49,23 @@ class ConfigurationParser {
     val data: StringTokenizer = new StringTokenizer(line.nextToken, " =\"")
     data.nextToken
     val sb: StringBuilder = new StringBuilder(data.nextToken)
-    while (data.hasMoreTokens) sb.append(" ").append(data.nextToken)
+    while (data.hasMoreTokens)
+      sb.append(" ").append(data.nextToken)
     _algorithmName = sb.toString
   }
 
    private def readInputFiles(line: StringTokenizer): Unit = {
     val data: StringTokenizer = new StringTokenizer(line.nextToken, " =\"")
     data.nextToken
-    while (data.hasMoreTokens) _inputFiles.addOne(data.nextToken)
+    while (data.hasMoreTokens) 
+      _inputFiles.addOne(data.nextToken)
   }
 
   private def readOutputFiles(line: StringTokenizer): Unit = {
     val data: StringTokenizer = new StringTokenizer(line.nextToken, " =\"")
     data.nextToken
-    while (data.hasMoreTokens) _outputFiles.addOne(data.nextToken)
+    while (data.hasMoreTokens) 
+      _outputFiles.addOne(data.nextToken)
   }
 
    private def readAllParameters(line: StringTokenizer): Unit = {

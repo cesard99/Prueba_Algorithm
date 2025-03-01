@@ -1,10 +1,8 @@
 package Repository
 
+import Utils.{DoubleCompare, Util}
+
 import java.util.Comparator
-import Utils.DoubleCompare
-import Utils.Util
-
-
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
 import scala.util.Using
@@ -16,7 +14,7 @@ class MyDataset {
   private var nClasses:Int=0
   private var nInputs:Int=0
   private var nAttr: Int=0
-  private var classSupp:Array[Int]=_
+  private var classSupp:Array[Int]=Array.empty
   
   def this(dataset:MyDataset) = {
     this()
@@ -30,7 +28,7 @@ class MyDataset {
   }
   def this(pathFile :String,delimiter:String) = {
     this()
-    var file :ArrayBuffer[Array[String]]=readFile(pathFile,delimiter)
+    val file :ArrayBuffer[Array[String]]=readFile(pathFile,delimiter)
     readAttributes(file)
     readInstances(file)
   }
@@ -42,11 +40,11 @@ class MyDataset {
   }
 
   private def readAttributes(file:ArrayBuffer[Array[String]]): Unit = {
-    var header : Array[String]= file.remove(0)
+    val header: Array[String] = file.remove(0)
     this.nAttr=header.length
     this.nInputs=this.nAttr-1
     this.attributes=new ArrayBuffer[MyAttribute](this.nAttr)
-    var possibleValues:ArrayBuffer[ArrayBuffer[String]]=this.readPossiblesValues(file)
+    val possibleValues: ArrayBuffer[ArrayBuffer[String]] = this.readPossiblesValues(file)
 
     for(i<- 0 until this.nInputs){
       var a : MyAttribute =null
@@ -59,7 +57,7 @@ class MyDataset {
       }
       this.attributes.addOne(a)
     }
-    var a :MyAttribute= new MyAttribute(header(this.nInputs),possibleValues(this.nInputs),this.nInputs)
+    val a: MyAttribute = new MyAttribute(header(this.nInputs), possibleValues(this.nInputs), this.nInputs)
     a.setRange(0.0D,a.numValues-1)
     this.attributes.addOne(a)
     this.nClasses=this.attributes(this.nInputs).numValues
@@ -68,7 +66,7 @@ class MyDataset {
 
 
   private def readInstances(file:ArrayBuffer[Array[String]]): Unit = {
-    var numInstances : Int = file.size
+    val numInstances: Int = file.size
     this.instances= new ArrayBuffer[MyInstance](numInstances)
     this.classSupp= new Array[Int](this.nClasses)
     file.foreach { line =>
@@ -88,20 +86,20 @@ class MyDataset {
   }
 
   private def readPossiblesValues(file:ArrayBuffer[Array[String]]):ArrayBuffer[ArrayBuffer[String]]={
-    var possibleValues:ArrayBuffer[ArrayBuffer[String]]= new ArrayBuffer[ArrayBuffer[String]](this.nAttr)
+    val possibleValues: ArrayBuffer[ArrayBuffer[String]] = new ArrayBuffer[ArrayBuffer[String]](this.nAttr)
     for (i<-0 until this.nAttr)
      possibleValues.addOne(new ArrayBuffer())
     for (line <- file){
       for (i<- 0 until this.nAttr){
-        var value =line(i)
+        val value = line(i)
         if(value.nonEmpty){
-          var pv :ArrayBuffer[String]=possibleValues(i)
+          val pv: ArrayBuffer[String] = possibleValues(i)
           try{
-            var v1 :Double= java.lang.Double.parseDouble(value)
+            val v1: Double = java.lang.Double.parseDouble(value)
             if(pv.isEmpty)
               pv.addOne(value)
             else{
-              var v2:Double=java.lang.Double.parseDouble(pv(0))
+              val v2: Double = java.lang.Double.parseDouble(pv(0))
               
               if(pv.size==1){
                 if(v1 !=v2)
@@ -122,31 +120,32 @@ class MyDataset {
   }
   
 
-  private def copyInstance(dest: MyDataset)= {
+  private def copyInstance(dest: MyDataset): Unit = {
     dest.instances.foreach(addInstance)
   }
 
-  def isInteger(s: String): Boolean = try {
-    s.toInt
-    true
-  } catch {
-    case _: NumberFormatException => false
+  def isInteger(s: String): Boolean = {
+    try {
+      Integer.parseInt(s)
+       true
+    } catch {
+      case _: NumberFormatException => false
+    }
   }
-
   def isDouble(s: String): Boolean = try {
-    s.toDouble
+    java.lang.Double.parseDouble(s)
     true
   } catch {
     case _: NumberFormatException => false
   }
 
-  def addInstance(inst : MyInstance)={
-    instances :+ inst
+  def addInstance(inst : MyInstance): Unit ={
+    instances.addOne(inst)
     classSupp(inst.clasValue())+=1
   }
 
   def getAttribute(index:Int):MyAttribute={
-    attributes.apply(index)
+    attributes(index)
   }
 
   def  getAttributes: ArrayBuffer[MyAttribute]= this.attributes
@@ -162,9 +161,9 @@ class MyDataset {
   def getNumAttributes:Int=nAttr
   def getNumInputs: Int =nInputs
   def getClassAttribute:MyAttribute=attributes(nInputs)
-  def trimToSize:Unit= instances.toList
-  def sort(implicit ord: Ordering[MyInstance]): Unit = {
-    instances = instances.sorted
+  def trimToSize():Unit= instances.trimToSize()
+  def sort(c: Comparator[MyInstance]): Unit = {
+    instances = instances.sortWith((a, b) => c.compare(a, b) < 0)
   }
 
   def sort(attr: Int, instanceIndexes: Array[Int]): Unit = {
@@ -202,7 +201,7 @@ class MyDataset {
   }
 
   def getClassSupp(instanceIndexes: Array[Int]): Array[Int] = {
-    val classSupport = Array.fill(nClasses)(0)
+    val classSupport = new Array[Int](nClasses)
 
     instanceIndexes.foreach(i => classSupport(instances(i).classValue) += 1)
 

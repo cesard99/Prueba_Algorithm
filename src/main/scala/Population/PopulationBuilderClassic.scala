@@ -1,7 +1,7 @@
 package Population
 import Codification.{Chromosome, Individual}
 import Randomize.Randomize
-import Repository.{MyAttribute, MyDataset, MyInstance}
+import Repository.{MyDataset, MyInstance}
 import Utils.{Configuration, DoubleCompare, Util, WeightsArray}
 
 import scala.collection.mutable.ArrayBuffer
@@ -13,27 +13,25 @@ class PopulationBuilderClassic(conf: Configuration,
                                update: IUpdatePopulation,
                                UP: UpdatedPopulation) extends PopulationConstructor(conf, weights, dataset, update, UP){
 
-  
+
   override def run(): Unit = {
     UP.clear()
 
-    var notCovered =ArrayBuffer.empty[Int]
-    
-    while (UP.size != weights.size()) {
-      if (notCovered.isEmpty) {
-        for (i <- 0 until dataset.getNumInstances) {
-          notCovered+=i
-        }
-      }
+    val notCovered: ArrayBuffer[Int] = ArrayBuffer.empty
+
+    while (UP.sizze != weights.size()) {
+      if (notCovered.isEmpty)
+        for (i <- 0 until dataset.getNumInstances)
+          notCovered :+ i
 
       val ind: Individual = buildIndividual(notCovered(scala.util.Random.nextInt(notCovered.size)))
-          ind.computeObjetives()
+      ind.computeObjetives()
 
 
-      ind.getMetrics.setWeights(weights.getWeight(UP.size))
+      ind.getMetrics.setWeights(weights.getWeight(UP.sizze))
       ind.getMetrics.setNeighbors(weights.getWeightNeighbors(UP.sizze))
 
-        trials+1
+      trials+=1
 
       if(DoubleCompare().greater(ind.getMetrics.getWracc,0) && UP.noneEqualIndividual(ind)){
         update.execute(UP,ind)
@@ -47,8 +45,8 @@ class PopulationBuilderClassic(conf: Configuration,
     var lb : Double=0.0
     var ub:Double=0.0
     var value : Double=0.0
-    var instance : MyInstance= dataset.getInstance(index)
-    var chromosome :Chromosome = new Chromosome(dataset)
+    val instance: MyInstance = dataset.getInstance(index)
+    val chromosome: Chromosome = new Chromosome(dataset)
 
     val rndAttr : Array[Int]= Util.randomPermutation(dataset.getNumInputs)
     val nUsedGenes = Randomize.randIntClosed(1,dataset.getNumInputs)
@@ -56,7 +54,7 @@ class PopulationBuilderClassic(conf: Configuration,
     for (i <- 0 until nUsedGenes) {
       val a = dataset.getAttribute(rndAttr(i))
 
-      chromosome.setInvolved(true, a.getIndex)
+      chromosome.setUsedGene(true, a.getIndex)
       chromosome.setPositiveInterval(Random.nextBoolean(), a.getIndex)
 
       value = instance.value(a.getIndex)
@@ -67,8 +65,8 @@ class PopulationBuilderClassic(conf: Configuration,
         val max = a.getUpperBound
 
         if (chromosome.isPositiveInterval(a.getIndex)) {
-          lb = Math.max(value - amplitude, min)
-          ub = Math.min(value + amplitude, max)
+          lb = math.max(value - amplitude, min)
+          ub = math.min(value + amplitude, max)
         } else {
           if (value - min > max - value) {
             lb = min + amplitude
@@ -99,7 +97,7 @@ class PopulationBuilderClassic(conf: Configuration,
     for (i <- nUsedGenes until dataset.getNumInputs) {
       val a = dataset.getAttribute(rndAttr(i))
 
-      chromosome.setInvolved(false, rndAttr(i))
+      chromosome.setUsedGene(false, rndAttr(i))
       chromosome.setPositiveInterval(Random.nextBoolean(), rndAttr(i))
 
       value = Randomize.randDoubleClosed(a.getLowerBound, a.getUpperBound)
@@ -107,8 +105,8 @@ class PopulationBuilderClassic(conf: Configuration,
       if (!a.isNominal) {
         val amplitude = a.getAmplitude / (conf.getAmplitudeFactor * 4)
 
-        lb = Math.max(value - amplitude, a.getLowerBound)
-        ub = Math.min(value + amplitude, a.getUpperBound)
+        lb = math.max(value - amplitude, a.getLowerBound)
+        ub = math.min(value + amplitude, a.getUpperBound)
 
         if (a.isInteger) {
           lb = lb.toInt
@@ -135,7 +133,7 @@ class PopulationBuilderClassic(conf: Configuration,
       }
     }
   }
-
-
-
+  def printIndividuals():Unit={
+    println("Esto es la clase BuilderClassic")
+  }
 }

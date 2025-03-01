@@ -32,7 +32,7 @@ class Individual(private var conf : Configuration, private var dataset: MyDatase
     computeMetrics(perClassAntSup,antSup,covered)
   }
 
-  def computeWinClass(perClassAntSup: Array[Int], antSup: Int):Unit={
+  private def computeWinClass(perClassAntSup: Array[Int], antSup: Int):Unit={
     var wincClassSup : Double =0
     val numClass = perClassAntSup.length
 
@@ -51,7 +51,7 @@ class Individual(private var conf : Configuration, private var dataset: MyDatase
     }
   }
 
-  def computeMetrics(perClassSup : Array[Int],antSup : Int , covered  : Array[Int]):Unit={
+  private def computeMetrics(perClassSup : Array[Int], antSup : Int, covered  : Array[Int]):Unit={
     val tp: Int = perClassSup(winClass)
     val fp: Int = antSup - tp
     val fn: Int = dataset.getClassesSupp(winClass) - tp
@@ -59,7 +59,7 @@ class Individual(private var conf : Configuration, private var dataset: MyDatase
 
     metrics= new Metrics(conf, new ConfusionMatrix(tp,tn,fp,fn))
     metrics.setCovered(covered)
-    metrics.compute(chromosome.getNumInvolvedGenes)
+    metrics.compute(chromosome.getNumUsedGenes)
   }
 
   def redundant(individual: Individual): Boolean = {
@@ -87,9 +87,8 @@ class Individual(private var conf : Configuration, private var dataset: MyDatase
       clone.chromosome = chromosome.clone()
       clone.metrics = metrics.clone()
     } catch {
-      case _: CloneNotSupportedException => // Es compatible, no se necesita manejar nada
+      case _: CloneNotSupportedException => // Es compatible
     }
-
     clone
   }
 

@@ -1,5 +1,5 @@
 package Utils
-import Population.{PopulationConstructor,PopulationBuilderForest,PopulationBuilderClassic,UpdateInitialPopulation,UpdatedPopulation}
+import Population.{PopulationBuilderForest, PopulationConstructor, UpdateInitialPopulation, UpdatedPopulation}
 import Repository.MyDataset
 
 class Init(conf:Configuration) {
@@ -11,10 +11,11 @@ class Init(conf:Configuration) {
   var z: Array[Double]=new Array[Double](conf.getNumObjetives)
   var zMin :Array[Double]= new Array[Double](conf.getNumObjetives)
   var UP :UpdatedPopulation=new UpdatedPopulation(weights.size(),z,zMin)
-  var initialBuilder:PopulationConstructor=new PopulationBuilderForest(conf,weights,dataset,new UpdateInitialPopulation,UP)
+  private val initialBuilder: PopulationConstructor = new PopulationBuilderForest(conf, weights, dataset, new UpdateInitialPopulation, UP)
 
   def run (): Unit ={
     initialBuilder.run()
+    initialBuilder.printIndividuals()
   }
 
 }

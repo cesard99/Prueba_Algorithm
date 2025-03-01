@@ -13,5 +13,5 @@ abstract class PopulationConstructor(protected val conf: Configuration,
   protected var trials:Int=0
   def getTrials:Int=trials
   def run(): Unit
-  
+  def printIndividuals():Unit
 }

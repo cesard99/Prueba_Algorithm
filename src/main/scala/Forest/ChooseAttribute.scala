@@ -9,9 +9,9 @@ class ChooseAttribute( private val dataset: MyDataset,private val instanceIndexe
 
   def run(): Unit = {
     var i = Random.nextInt( dataset.getNumInputs) // Randomiza el valor de i
-    val j = i // Guardamos el valor de i para comparar en la condición de salida
+    val j = i // Se guarda el valor de i para comparar en la condición de salida
 
-    // Aseguramos que el bucle se ejecute al menos una vez
+    // Aseguramos que el bucle se ejecute al menos una vez dando el sentido como si fuera un 
     var firstIteration = true
 
     while (firstIteration || i != j) {

@@ -1,11 +1,11 @@
 package Population
-import Codification.{Individual, Metrics}
-import Utils.{Configuration, WeightsArray}
-import Repository.MyDataset
+import Codification.Individual
 import Forest.TreeCollectionBuilder
+import Repository.MyDataset
+import Utils.{Configuration, WeightsArray}
 
-import java.util
-
+import scala.collection.mutable
+//Clase que se encarga de crear una poblacion de arboles 
 class PopulationBuilderForest(conf: Configuration,
                               weights: WeightsArray,
                               dataset: MyDataset,
@@ -14,32 +14,41 @@ class PopulationBuilderForest(conf: Configuration,
 
   
   private val builder = new TreeCollectionBuilder(conf, dataset)
-  var individuals: util.LinkedList[Individual]=_
+  var individuals: mutable.Queue[Individual]=_
 
+  
   override def run(): Unit = {
-    UP.clear()
-    val sizePop = weights.size()
+    UP.clear() //Limpia la poblacion y la prepara para crear una nueva poblacion 
+    val sizePop = weights.size() //Se obtiene el tamaño de la poblacion actual que se espera 
 
-    while (UP.size != sizePop) {
-      if (individuals == null || individuals.isEmpty) {
-        builder.build(weights.size() - UP.size)
+    while (UP.sizze != sizePop) { // Este bucle es para crear individuos, mientras el tamaño de la poblacion sea diferente del tamaño esperado 
+      if (individuals == null || individuals.isEmpty) {//se verifica si la lista de individuos esta vacia o null
+        builder.build(weights.size() - UP.sizze)// si se cumple lo anterior se crean nuevos individuos
         individuals = builder.getIndividuals
       }
 
-      while (!individuals.isEmpty && UP.size != sizePop) {
-        val ind = individuals.remove()
-
+      while (individuals.nonEmpty && UP.sizze != sizePop) { // Este bucle se cumple mientras haya individuos y el tamaño de la poblacion no sea el esperado
+        val ind = individuals.dequeue() // se desencola el primer individuo y se almacena
+        // se configuran las metricas de ese individuo
         val m = ind.getMetrics
-        m.setWeights(weights.getWeight(UP.size))
-        m.setNeighbors(weights.getWeightNeighbors(UP.size))
+        m.setWeights(weights.getWeight(UP.sizze))
+        m.setNeighbors(weights.getWeightNeighbors(UP.sizze))
 
-        trials + 1
-
+        trials += 1 // se incrementa el contador en 1
+        
+        
+        // se Verifica que que no exista un individuo igual en la poblacion y en caso de que no exista se actualiza
         if (UP.noneEqualIndividual(ind)) {
           update.execute(UP, ind)
         }
       }
     }
   }
+  def printIndividuals():Unit={
+    for(i<- 0 to  individuals.length)
+      println(individuals(i))
+  }
+
+
 
 }

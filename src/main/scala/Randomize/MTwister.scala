@@ -1,21 +1,22 @@
 package Randomize
 
 class MTwister {
-  var state: Array[Long] = new Array[Long](624)
+  private val state: Array[Long] = new Array[Long](624)
   var left: Int = 1
-  var initf: Int = 0
-  var inext: Int = 0
+  private var initf: Int = 0
+  private var inext: Int = 0
 
   def initGenerateRandom(s: Long): Unit = {
     state(0) = s & 0xffffffffL
     for (j <- 1 until 624) {
-      state(j) = (1812433253L * (state(j - 1) ^ (state(j - 1) >> 30)) + j) & 0xffffffffL
+      state(j) = (1812433253L * (state(j - 1) ^ (state(j - 1) >> 30)) + j)
+      state(j)  &= 0xffffffffL
     }
     left = 1
     initf = 1
   }
 
-  def nextState(): Unit = {
+  def nextState: Unit = {
     var ip = 0
     var j = 0
 
@@ -37,11 +38,12 @@ class MTwister {
     state(ip) = state(ip + 397 - 624) ^ ((((state(ip) & 0x80000000L) | (state(0) & 0x7fffffffL)) >> 1) ^ (if ((state(0) & 1L) != 0L) 0x9908b0dfL else 0L))
   }
 
-  def generateRandomInt32(): Long = {
+  def generateRandomInt32: Long = {
     if ( {
       left -= 1; left
-    } == 0) nextState()
-    var y = state(inext)
+    } == 0) nextState
+    var temporal = inext+1
+    var y = state(temporal)
     inext += 1
     y ^= (y >> 11)
     y ^= (y << 7) & 0x9d2c5680L
@@ -50,10 +52,10 @@ class MTwister {
     y
   }
 
-  // Genera un número aleatorio en
+  // Genera un número aleatorio con 53 bits de resolucion
   def generateRandomRes53:Double={
-    val a: Long = generateRandomInt32() >> 5
-    val b: Long = generateRandomInt32() >> 6
+    val a: Long = generateRandomInt32 >> 5
+    val b: Long = generateRandomInt32 >> 6
     (a * 67108864.0 + b) * (1.0 / 9007199254740992.0)
   }
 }

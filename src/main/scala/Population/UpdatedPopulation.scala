@@ -7,7 +7,7 @@ class UpdatedPopulation(size: Int, z: Array[Double], zMin: Array[Double]) extend
   def initializeZ(): Unit = {
     for (i <- z.indices) {
       z(i) = bestObjectiveValue(i)
-      zMin(i) = if (i == 1) -1.0 else 0.0
+      zMin(i) = if (i == 1) -1.0f else 0.0f
     }
   }
 
@@ -32,10 +32,10 @@ class UpdatedPopulation(size: Int, z: Array[Double], zMin: Array[Double]) extend
   }
 
   def tchebycheffApproach(ind: Individual): Double = {
-    var gMax = ind.getWeight(0) * (Math.abs(z(0) - ind.getObjective(0)) / (z(0) - zMin(0)))
+    var gMax = ind.getWeight(0) * (math.abs(z(0) - ind.getObjective(0)) / (z(0) - zMin(0)))
 
     for (i <- 1 until z.length) {
-      val values = ind.getWeight(i) * (Math.abs(z(i) - ind.getObjective(i)) / (z(i) - zMin(i)))
+      val values: Double = ind.getWeight(i) * (math.abs(z(i) - ind.getObjective(i)) / (z(i) - zMin(i)))
       if (DoubleCompare().greater(values, gMax)) gMax = values
     }
 

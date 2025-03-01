@@ -1,18 +1,18 @@
 package Forest
 import Codification.{Chromosome, Individual}
-import Randomize.Randomize
-import Utils.{DoubleCompare,Configuration}
-import Repository.{MyDataset,MyAttribute}
-import java.util._
+import Repository.{MyAttribute, MyDataset}
+import Utils.{Configuration, DoubleCompare}
+
+import java.util.*
 import java.util.stream.IntStream
 import scala.collection.mutable
-import scala.util.Random
 import scala.math
+import scala.util.Random
 
 
 class TreeCollectionBuilder(private val conf:Configuration, private val dataset: MyDataset ) {
   private val THREAD : Int = Runtime.getRuntime.availableProcessors()
-  private var individuals: mutable.Queue[Individual]= mutable.Queue.empty[Individual]
+  private val individuals: mutable.Queue[Individual] = mutable.Queue.empty[Individual]
 
   def build(numIndividuals: Int ):Unit ={
     individuals.clear()
@@ -32,7 +32,7 @@ class TreeCollectionBuilder(private val conf:Configuration, private val dataset:
     })
   }
 
-  def covert (tree: Node , chromosome: Chromosome):Unit={
+  private def covert(tree: Node, chromosome: Chromosome):Unit={
     if(!tree.isLeaf){ // el nodo no es hoja
       val sons : Array[Node]=tree.getChildredn
       val interval :Interval = tree.getInterval
@@ -72,9 +72,9 @@ class TreeCollectionBuilder(private val conf:Configuration, private val dataset:
 
     val numGenes = dataset.getNumInputs
     for(i <- 0 until numGenes)
-      if(!chromosome.isUdedGene(i))
+      if(!chromosome.isUsedGene(i))
         buildUnusedGene(individual,i)
-
+    
     individual
   }
 
