@@ -9,14 +9,14 @@ class MTwister {
   def initGenerateRandom(s: Long): Unit = {
     state(0) = s & 0xffffffffL
     for (j <- 1 until 624) {
-      state(j) = (1812433253L * (state(j - 1) ^ (state(j - 1) >> 30)) + j)
+      state(j) = 1812433253L * (state(j - 1) ^ (state(j - 1) >> 30)) + j
       state(j)  &= 0xffffffffL
     }
     left = 1
     initf = 1
   }
 
-  def nextState: Unit = {
+  private def nextState(): Unit = {
     var ip = 0
     var j = 0
 
@@ -38,11 +38,11 @@ class MTwister {
     state(ip) = state(ip + 397 - 624) ^ ((((state(ip) & 0x80000000L) | (state(0) & 0x7fffffffL)) >> 1) ^ (if ((state(0) & 1L) != 0L) 0x9908b0dfL else 0L))
   }
 
-  def generateRandomInt32: Long = {
+  private def generateRandomInt32: Long = {
     if ( {
       left -= 1; left
-    } == 0) nextState
-    var temporal = inext+1
+    } == 0) nextState()
+    val temporal = inext + 1
     var y = state(temporal)
     inext += 1
     y ^= (y >> 11)

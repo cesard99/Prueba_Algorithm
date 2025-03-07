@@ -1,6 +1,6 @@
 algorithm = DINOS
-inputData = "/home/cesar-escalona/Cesar/Proyectos/Prueba_Algorithm/src/main/scala/bd/bupa-10-1tra.dat" "/home/cesar-escalona/Cesar/Proyectos/Prueba_Algorithm/src/main/scala/bd/bupa-10-1tra.dat" "/home/cesar-escalona/Cesar/Proyectos/Prueba_Algorithm/src/main/scala/bd/bupa-10-1tst.dat"
-outputData = "/home/cesar-escalona/Cesar/Proyectos/Results/resultTEST.tra" "/home/cesar-escalona/Cesar/Proyectos/Results/resultTT.tst" "/home/cesar-escalona/Cesar/Proyectos/Results/result0s0e0.txt"
+inputData = "C:/Cesar/Proyectos/Prueba_Algorithm/src/main/scala/bd/bupa-10-1tra.dat" "C:/Cesar/Proyectos/Prueba_Algorithm/src/main/scala/bd/bupa-10-1tra.dat" "C:/Cesar/Proyectos/Prueba_Algorithm/src/main/scala/bd/bupa-10-1tst.dat"
+outputData = "C:/Users/Cesar_Escalona/Documents/Results/resultTEST.tra" "C:/Users/Cesar_Escalona/Documents/Results/resultTT.tst" "C:/Users/Cesar_Escalona/Documents/Results/result0s0e0.txt"
 
 seed = 1343278692
 Type Population = "Random"
@@ -15,5 +15,5 @@ Factor amplitude = 2.0
 Overlap Level = 0.75
 Difference threshold = 5.0
 Dominance threshold =0.3
-min instance=2
+min instance=0.2
 csv Delimiter=,

@@ -10,6 +10,8 @@ import scala.math
 import scala.util.Random
 
 
+
+
 class TreeCollectionBuilder(private val conf:Configuration, private val dataset: MyDataset ) {
   private val THREAD : Int = Runtime.getRuntime.availableProcessors()
   private val individuals: mutable.Queue[Individual] = mutable.Queue.empty[Individual]

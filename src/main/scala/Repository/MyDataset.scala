@@ -34,9 +34,18 @@ class MyDataset {
   }
 
   private def readFile(pathFile:String,delimiter:String): ArrayBuffer[Array[String]]={
-    Using(Source.fromFile(pathFile)){
-      source => source.getLines().map(_.split(delimiter).filter(_.nonEmpty)).filter(_.nonEmpty).to(ArrayBuffer)
-    }.getOrElse(ArrayBuffer.empty)
+    val buffer = ArrayBuffer[Array[String]]()
+
+    Using(Source.fromFile(pathFile)) { reader =>
+      for (line <- reader.getLines() if line.nonEmpty) {
+        buffer += line.split(delimiter).map(_.trim) // Divide por el delimitador y elimina espacios
+      }
+    } match {
+      case scala.util.Success(_) => buffer
+      case scala.util.Failure(exception) => throw exception
+    }
+
+    buffer
   }
 
   private def readAttributes(file:ArrayBuffer[Array[String]]): Unit = {

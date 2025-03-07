@@ -4,5 +4,6 @@ ThisBuild / scalaVersion := "3.3.2"
 
 lazy val root = (project in file("."))
   .settings(
-    name := "Algoritmo_Official_Initializing"
+    name := "Algoritmo_Official_Initializing",
+
   )

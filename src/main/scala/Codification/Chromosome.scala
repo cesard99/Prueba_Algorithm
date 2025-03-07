@@ -31,11 +31,13 @@ class Chromosome( private var dataset : MyDataset) extends  Cloneable {
 
   def isCovered(instance: MyInstance): Boolean = {
     var flag = true
-    for (i <- 0 until dataset.getNumInputs) {
+    var i :Int = 0
+    while(flag || i < dataset.getNumInputs){
       if (usedGenes(i) && (!isCovered(instance, i) || instance.isMissing(i)))
-        flag=false
-        break()
+        flag = false
+      i+=1
     }
+
      flag
   }
 
@@ -58,12 +60,12 @@ class Chromosome( private var dataset : MyDataset) extends  Cloneable {
   def equals(chr: Chromosome): Boolean = {
     val numGenes: Int = dataset.getNumInputs
     var flag :Boolean= true
+    var i :Int=0
 
-    for (i <- 0 until numGenes) {
-      if (usedGenes(i) != chr.usedGenes(i) || positiveIntervals(i) != chr.positiveIntervals(i) || !DoubleCompare().equals(lowerBound(i), chr.lowerBound(i)) || !DoubleCompare().equals(upperBound(i), chr.upperBound(i))) {
-        flag=false
-        break()
-      }
+    while (flag || i < numGenes){
+      if (usedGenes(i) != chr.usedGenes(i) || positiveIntervals(i) != chr.positiveIntervals(i) || !DoubleCompare().equals(lowerBound(i), chr.lowerBound(i)) || !DoubleCompare().equals(upperBound(i), chr.upperBound(i)))
+        flag = false
+      i+=1
     }
      flag
   }
