@@ -45,7 +45,7 @@ class PopulationBuilderForest(conf: Configuration,
     }
   }
   def printIndividuals():Unit={
-    for(i<- 0 to  individuals.length)
+    for(i<- individuals.indices)
       println(individuals(i))
   }
 

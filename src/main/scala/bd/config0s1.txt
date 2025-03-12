@@ -15,5 +15,5 @@ Factor amplitude = 2.0
 Overlap Level = 0.75
 Difference threshold = 5.0
 Dominance threshold =0.3
-min instance=0.2
+min instance=0.02
 csv Delimiter=,

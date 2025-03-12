@@ -1,6 +1,6 @@
 package Codification
 
-import scala.util.control.Breaks._
+
 
 import Repository.{MyAttribute, MyDataset, MyInstance}
 import Utils.DoubleCompare
@@ -30,14 +30,12 @@ class Chromosome( private var dataset : MyDataset) extends  Cloneable {
   }
 
   def isCovered(instance: MyInstance): Boolean = {
+    val numGenes= dataset.getNumInputs
     var flag = true
-    var i :Int = 0
-    while(flag || i < dataset.getNumInputs){
+    for(i<- 0 until numGenes if flag){
       if (usedGenes(i) && (!isCovered(instance, i) || instance.isMissing(i)))
         flag = false
-      i+=1
     }
-
      flag
   }
 
@@ -60,12 +58,10 @@ class Chromosome( private var dataset : MyDataset) extends  Cloneable {
   def equals(chr: Chromosome): Boolean = {
     val numGenes: Int = dataset.getNumInputs
     var flag :Boolean= true
-    var i :Int=0
 
-    while (flag || i < numGenes){
+    for(i<-0 until numGenes if flag){
       if (usedGenes(i) != chr.usedGenes(i) || positiveIntervals(i) != chr.positiveIntervals(i) || !DoubleCompare().equals(lowerBound(i), chr.lowerBound(i)) || !DoubleCompare().equals(upperBound(i), chr.upperBound(i)))
         flag = false
-      i+=1
     }
      flag
   }

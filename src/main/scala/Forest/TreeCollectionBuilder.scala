@@ -16,9 +16,9 @@ class TreeCollectionBuilder(private val conf:Configuration, private val dataset:
   private val THREAD : Int = Runtime.getRuntime.availableProcessors()
   private val individuals: mutable.Queue[Individual] = mutable.Queue.empty[Individual]
 
-  def build(numIndividuals: Int ):Unit ={
+  def build(numIndividuals: Int ):Unit ={ // funcion que permite crear un conjunto de individuos usando un enfoque de Muestreo con reemplazo.
     individuals.clear()
-    val size : Int = dataset.getNumInstances
+    val size : Int = dataset.getNumInstances //se obtiene el tamaño del numero de instancias(filas que hay en el dataset)
     val minInstances :Int = (conf.getMinInstances * size).toInt
 
     IntStream.range(0,THREAD).parallel().forEach( t =>{

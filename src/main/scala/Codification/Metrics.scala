@@ -4,7 +4,6 @@ import Utils.{Configuration, DoubleCompare, Util}
 import java.text.{DecimalFormat, NumberFormat}
 import java.util.Locale
 import scala.math._
-import scala.util.control.Breaks._
 
 class Metrics(private var conf: Configuration, private var confusionMatrix: ConfusionMatrix) extends  Cloneable{
   private var coverage: Double = 0.0
